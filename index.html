@@ -1297,14 +1297,18 @@ window.addEventListener('load', async () => {
   }
 
   updateUI();
-  loadCollections();
+  // Load collections in background - don't block page
+  setTimeout(() => loadCollections(), 100);
 });
 
 // ── COLLECTIONS ───────────────────────────────────────────────────────────────
 async function loadCollections() {
   const grid = document.getElementById('collectionsGrid');
   try {
-    const res = await fetch(`${API.AUTH}/collections`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${API.AUTH}/collections`, { signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
     const collections = data.items || [];
 

@@ -1283,6 +1283,7 @@ window.addEventListener('load', async () => {
     }
     window.history.replaceState({}, '', window.location.pathname);
     showToast(`Welcome, ${decodeURIComponent(userName).split(' ')[0]}! 👋`);
+    initPushNotifications();
   }
 
   const paymentStatus = params.get('payment');
@@ -1810,6 +1811,49 @@ async function getTMDBPoster(title) {
     if (result?.poster_path) return TMDB_IMG + result.poster_path;
     return null;
   } catch { return null; }
+}
+
+
+// ── PUSH NOTIFICATIONS ────────────────────────────────────────────────────────
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+  try {
+    // Register service worker
+    const reg = await navigator.serviceWorker.register('/PichaEntertainment-/sw.js');
+
+    // Ask permission
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    // Get VAPID public key
+    const keyRes = await fetch(`${API.AUTH}/vapid-public-key`);
+    const { key } = await keyRes.json();
+
+    // Subscribe to push
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(key),
+    });
+
+    // Save subscription to worker
+    await fetch(`${API.AUTH}/push/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(subscription),
+    });
+
+    console.log('Push notifications enabled');
+  } catch (err) {
+    console.log('Push setup failed:', err);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
 }
 
 function esc(str) {

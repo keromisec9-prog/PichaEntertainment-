@@ -1373,12 +1373,16 @@ async function openCollection(collectionId, collectionName) {
 
     // Fetch like counts for all videos
     const likeCounts = await fetchLikeCounts(videos.map(v => v.guid));
-    // Fetch TMDB posters in parallel
-    const videosWithPosters = await Promise.all(videos.map(async v => {
+    // Render immediately with Bunny thumbs
+    renderVideoGrid(grid, videos, likeCounts);
+    // Then update with TMDB posters in background
+    videos.forEach(async v => {
       const poster = await getTMDBPoster(v.title);
-      return { ...v, tmdbPoster: poster };
-    }));
-    renderVideoGrid(grid, videosWithPosters, likeCounts);
+      if (poster) {
+        const img = grid.querySelector(`#card-${v.guid} .video-thumb`);
+        if (img) { img.src = poster; img.style.display = 'block'; }
+      }
+    });
   } catch {
     grid.innerHTML = '<div class="empty-state">Could not load videos.</div>';
   }
@@ -1817,8 +1821,12 @@ function skeletons(n) {
 
 async function getTMDBPoster(title) {
   try {
-    const query = encodeURIComponent(title.replace(/[._-]/g, ' ').replace(/(.*)/g, '').trim());
-    const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${query}&api_key=${TMDB_KEY}`);
+    const clean = title.replace(/\.mp4$/i, '').replace(/[._-]/g, ' ').replace(/\(.*\)/g, '').trim();
+    if (!clean) return null;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(clean)}&api_key=${TMDB_KEY}`, { signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
     const result = data.results?.[0];
     if (result?.poster_path) return TMDB_IMG + result.poster_path;

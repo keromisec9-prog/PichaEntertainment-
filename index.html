@@ -779,8 +779,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.5rem;
-      background: #000;
+      padding: 1rem;
     }
     .player-wrapper {
       width: 100%;
@@ -788,8 +787,6 @@
       aspect-ratio: 16/9;
       position: relative;
       background: #000;
-      border-radius: 4px;
-      overflow: hidden;
     }
     .player-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
@@ -916,8 +913,6 @@
 <body>
 
 <script>
-const TMDB_KEY = '3ba29e8934b640ae467a31241cd2f0fd';
-const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
   const API = {
     AUTH:     'https://picha-worker.kerosoftz522.workers.dev',
     PAYMENTS: 'https://picha-payments.kerosoftz522.workers.dev',
@@ -1286,7 +1281,6 @@ window.addEventListener('load', async () => {
     }
     window.history.replaceState({}, '', window.location.pathname);
     showToast(`Welcome, ${decodeURIComponent(userName).split(' ')[0]}! 👋`);
-    initPushNotifications();
   }
 
   const paymentStatus = params.get('payment');
@@ -1297,18 +1291,14 @@ window.addEventListener('load', async () => {
   }
 
   updateUI();
-  // Load collections in background - don't block page
-  setTimeout(() => loadCollections(), 100);
+  loadCollections();
 });
 
 // ── COLLECTIONS ───────────────────────────────────────────────────────────────
 async function loadCollections() {
   const grid = document.getElementById('collectionsGrid');
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(`${API.AUTH}/collections`, { signal: controller.signal });
-    clearTimeout(timeout);
+    const res = await fetch(`${API.AUTH}/collections`);
     const data = await res.json();
     const collections = data.items || [];
 
@@ -1373,28 +1363,7 @@ async function openCollection(collectionId, collectionName) {
 
     // Fetch like counts for all videos
     const likeCounts = await fetchLikeCounts(videos.map(v => v.guid));
-    // Render immediately with Bunny thumbs
     renderVideoGrid(grid, videos, likeCounts);
-    // Then update with TMDB posters in background
-    videos.forEach(async v => {
-      const poster = await getTMDBPoster(v.title);
-      if (poster) {
-        const card = grid.querySelector(`#card-${v.guid}`);
-        if (!card) return;
-        let img = card.querySelector('.video-thumb');
-        if (!img) {
-          // Replace placeholder with img
-          const placeholder = card.querySelector('.video-thumb-placeholder');
-          if (placeholder) {
-            img = document.createElement('img');
-            img.className = 'video-thumb';
-            img.alt = v.title;
-            placeholder.replaceWith(img);
-          }
-        }
-        if (img) img.src = poster;
-      }
-    });
   } catch {
     grid.innerHTML = '<div class="empty-state">Could not load videos.</div>';
   }
@@ -1421,9 +1390,9 @@ function renderVideoGrid(grid, videos, likeCounts = {}) {
   }
 
   grid.innerHTML = videos.map(v => {
-    const thumb = v.tmdbPoster || (v.thumbnailFileName
+    const thumb = v.thumbnailFileName
       ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}`
-      : null);
+      : null;
     const isLiked = likedVideos.includes(v.guid);
     const isSaved = watchLater.some(w => w.guid === v.guid);
     const likes = likeCounts[v.guid] || 0;
@@ -1625,18 +1594,12 @@ function showRelated(currentVideoId) {
   if (!related.length) return;
 
   const scroll = document.getElementById('relatedScroll');
-  // Fetch TMDB posters for related videos
-  const relatedWithPosters = await Promise.all(related.map(async v => {
-    const poster = await getTMDBPoster(v.title);
-    return { ...v, tmdbPoster: poster };
-  }));
-
-  scroll.innerHTML = relatedWithPosters.map(v => {
-    const thumb = v.tmdbPoster || (v.thumbnailFileName ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}` : null);
+  scroll.innerHTML = related.map(v => {
+    const thumb = v.thumbnailFileName ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}` : null;
     return `
       <div class="related-card" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
         ${thumb
-          ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy" crossorigin="anonymous">`
+          ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy">`
           : `<div class="related-card-placeholder"></div>`}
         <div class="related-card-title">${esc(v.title)}</div>
       </div>`;
@@ -1829,64 +1792,6 @@ function showToast(msg, type = 'success') {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function skeletons(n) {
   return Array(n).fill('<div class="skeleton"></div>').join('');
-}
-
-async function getTMDBPoster(title) {
-  try {
-    const clean = title.replace(/\.mp4$/i, '').replace(/[._-]/g, ' ').replace(/\(.*\)/g, '').trim();
-    if (!clean) return null;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(clean)}&api_key=${TMDB_KEY}`, { signal: controller.signal });
-    clearTimeout(timeout);
-    const data = await res.json();
-    const result = data.results?.[0];
-    if (result?.poster_path) return TMDB_IMG + result.poster_path;
-    return null;
-  } catch { return null; }
-}
-
-
-// ── PUSH NOTIFICATIONS ────────────────────────────────────────────────────────
-async function initPushNotifications() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-
-  try {
-    // Register service worker
-    const reg = await navigator.serviceWorker.register('/PichaEntertainment-/sw.js');
-
-    // Ask permission
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return;
-
-    // Get VAPID public key
-    const keyRes = await fetch(`${API.AUTH}/vapid-public-key`);
-    const { key } = await keyRes.json();
-
-    // Subscribe to push
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(key),
-    });
-
-    // Save subscription to worker
-    await fetch(`${API.AUTH}/push/subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription),
-    });
-
-    console.log('Push notifications enabled');
-  } catch (err) {
-    console.log('Push setup failed:', err);
-  }
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  return new Uint8Array([...rawData].map(c => c.charCodeAt(0)));
 }
 
 function esc(str) {

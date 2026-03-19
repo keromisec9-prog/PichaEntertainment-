@@ -1310,7 +1310,7 @@ async function loadCollections() {
     grid.innerHTML = collections.map(col => {
       const emojiClass = getEmojiClass(col.name);
       return `
-        <div class="collection-card ${emojiClass}" onclick="openCollection('${col.id}','${esc(col.name)}')">
+        <div class="collection-card ${emojiClass}" onclick="openCollection('${col.guid}','${esc(col.name)}')">
           <div class="collection-emoji"></div>
           <div class="collection-name">${esc(col.name)}</div>
           <div class="collection-count">${col.videoCount || 0} videos</div>

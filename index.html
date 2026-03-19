@@ -779,7 +779,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 0.5rem;
+      background: #000;
     }
     .player-wrapper {
       width: 100%;
@@ -787,6 +788,8 @@
       aspect-ratio: 16/9;
       position: relative;
       background: #000;
+      border-radius: 4px;
+      overflow: hidden;
     }
     .player-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
@@ -913,8 +916,8 @@
 <body>
 
 <script>
-  const TMDB_KEY = '3ba29e8934b640ae467a31241cd2f0fd';
-  const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
+const TMDB_KEY = '3ba29e8934b640ae467a31241cd2f0fd';
+const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
   const API = {
     AUTH:     'https://picha-worker.kerosoftz522.workers.dev',
     PAYMENTS: 'https://picha-payments.kerosoftz522.workers.dev',
@@ -1602,12 +1605,18 @@ function showRelated(currentVideoId) {
   if (!related.length) return;
 
   const scroll = document.getElementById('relatedScroll');
-  scroll.innerHTML = related.map(v => {
-    const thumb = v.thumbnailFileName ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}` : null;
+  // Fetch TMDB posters for related videos
+  const relatedWithPosters = await Promise.all(related.map(async v => {
+    const poster = await getTMDBPoster(v.title);
+    return { ...v, tmdbPoster: poster };
+  }));
+
+  scroll.innerHTML = relatedWithPosters.map(v => {
+    const thumb = v.tmdbPoster || (v.thumbnailFileName ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}` : null);
     return `
       <div class="related-card" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
         ${thumb
-          ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy">`
+          ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy" crossorigin="anonymous">`
           : `<div class="related-card-placeholder"></div>`}
         <div class="related-card-title">${esc(v.title)}</div>
       </div>`;

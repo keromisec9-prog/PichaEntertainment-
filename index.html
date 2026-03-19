@@ -31,16 +31,6 @@
       overflow-x: hidden;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
-    }
-
     /* ── NAV ── */
     nav {
       position: fixed;
@@ -49,67 +39,93 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.2rem 4rem;
-      background: linear-gradient(to bottom, rgba(10,10,10,0.97), transparent);
-      backdrop-filter: blur(4px);
+      padding: 1rem 2rem;
+      background: rgba(10,10,10,0.97);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
     }
 
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 900;
       color: var(--white);
       text-decoration: none;
     }
     .logo span { color: var(--gold); }
 
-    .nav-right {
+    .nav-center {
       display: flex;
-      align-items: center;
-      gap: 1.5rem;
+      gap: 0.5rem;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-      align-items: center;
-    }
-
-    .nav-links a {
+    .nav-tab {
+      background: none;
+      border: none;
       color: var(--muted);
-      text-decoration: none;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      transition: color 0.2s;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      border-radius: 100px;
+      transition: all 0.2s;
     }
-    .nav-links a:hover { color: var(--white); }
+    .nav-tab:hover, .nav-tab.active { color: var(--white); background: rgba(255,255,255,0.07); }
 
-    /* User avatar in nav */
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+    .nav-icon-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 50%;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .nav-icon-btn:hover { color: var(--white); background: rgba(255,255,255,0.07); }
+
+    .nav-badge {
+      position: absolute;
+      top: 0; right: 0;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: none;
+    }
+    .nav-badge.visible { display: block; }
+
+    .btn-signin {
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 0.45rem 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .btn-signin:hover { background: var(--gold-light); }
+
     .nav-user {
       display: none;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
       cursor: pointer;
       position: relative;
     }
     .nav-user.visible { display: flex; }
 
     .nav-avatar {
-      width: 2rem; height: 2rem;
+      width: 1.8rem; height: 1.8rem;
       border-radius: 50%;
       border: 2px solid var(--gold);
       object-fit: cover;
-    }
-
-    .nav-username {
-      font-size: 0.82rem;
-      color: var(--white);
-      max-width: 120px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .nav-dropdown {
@@ -120,8 +136,9 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.5rem;
-      min-width: 180px;
+      min-width: 200px;
       display: none;
+      z-index: 200;
     }
     .nav-dropdown.open { display: block; }
 
@@ -142,269 +159,310 @@
     .sub-badge {
       background: var(--green);
       color: #fff;
-      font-size: 0.6rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-size: 0.58rem;
       padding: 0.15rem 0.5rem;
       border-radius: 100px;
     }
 
-    .btn-signin {
-      background: var(--gold);
-      color: var(--bg);
-      border: none;
-      padding: 0.5rem 1.4rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .btn-signin:hover { background: var(--gold-light); }
+    /* ── PAGES ── */
+    .page { display: none; padding-top: 60px; min-height: 100vh; }
+    .page.active { display: block; }
 
     /* ── HERO ── */
     .hero {
       position: relative;
-      min-height: 100vh;
+      height: 70vh;
+      min-height: 400px;
       display: flex;
       align-items: center;
       overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,168,76,0.08) 0%, transparent 60%),
-        linear-gradient(135deg, #0a0a0a 0%, #0f0e0c 100%);
+      background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,168,76,0.08) 0%, transparent 60%), #0a0a0a;
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
-      padding: 0 4rem;
-      max-width: 600px;
+      padding: 0 2rem;
+      max-width: 560px;
       animation: fadeUp 1s ease both;
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .hero-eyebrow {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
     }
     .hero-eyebrow::before {
       content: '';
       display: block;
-      width: 2.5rem;
+      width: 2rem;
       height: 1px;
       background: var(--gold);
     }
 
     .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-size: clamp(2.5rem, 6vw, 5rem);
       font-weight: 900;
       line-height: 1.05;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
     }
     .hero h1 em { font-style: italic; color: var(--gold); }
 
     .hero p {
-      font-size: 1rem;
+      font-size: 0.95rem;
       line-height: 1.7;
       color: #9a9088;
-      margin-bottom: 2.5rem;
-      max-width: 420px;
+      margin-bottom: 2rem;
+      max-width: 380px;
     }
 
-    .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .hero-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
 
     .btn-primary {
       background: var(--gold);
       color: var(--bg);
       border: none;
-      padding: 0.9rem 2.2rem;
+      padding: 0.8rem 1.8rem;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
       cursor: pointer;
       border-radius: 2px;
-      transition: background 0.2s, transform 0.15s;
+      transition: background 0.2s;
     }
-    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-primary:hover { background: var(--gold-light); }
 
     .btn-outline {
       background: transparent;
       color: var(--white);
       border: 1px solid rgba(255,255,255,0.2);
-      padding: 0.9rem 2rem;
+      padding: 0.8rem 1.6rem;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: 0.85rem;
       cursor: pointer;
       border-radius: 2px;
       transition: all 0.2s;
     }
     .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ── SECTIONS ── */
-    section { padding: 5rem 4rem; }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-    }
+    /* ── COLLECTIONS GRID ── */
+    .section { padding: 2.5rem 2rem; }
 
     .section-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .collection-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .collection-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+    .collection-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-3px); }
+    .collection-card:hover::before { transform: scaleX(1); }
+
+    .collection-emoji { font-size: 2rem; margin-bottom: 0.6rem; }
+
+    .collection-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    .collection-count {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* Collection emoji mapping */
+    .col-Action .collection-emoji::after { content: '💥'; }
+    .col-Adventure .collection-emoji::after { content: '🗺️'; }
+    .col-Animation .collection-emoji::after { content: '🎨'; }
+    .col-Comedy .collection-emoji::after { content: '😂'; }
+    .col-Crime .collection-emoji::after { content: '🔫'; }
+    .col-Documentary .collection-emoji::after { content: '🎥'; }
+    .col-Series .collection-emoji::after { content: '📺'; }
+    .col-Family .collection-emoji::after { content: '👨‍👩‍👧'; }
+    .col-Fantasy .collection-emoji::after { content: '🧙'; }
+    .col-History .collection-emoji::after { content: '📜'; }
+    .col-Horror .collection-emoji::after { content: '👻'; }
+    .col-Kids .collection-emoji::after { content: '🧒'; }
+    .col-Music .collection-emoji::after { content: '🎵'; }
+    .col-Mystery .collection-emoji::after { content: '🔍'; }
+    .col-Romance .collection-emoji::after { content: '❤️'; }
+    .col-SciFi .collection-emoji::after { content: '🚀'; }
+    .col-Sports .collection-emoji::after { content: '⚽'; }
+    .col-Thriller .collection-emoji::after { content: '😱'; }
+    .col-War .collection-emoji::after { content: '⚔️'; }
+    .col-Kungfu .collection-emoji::after { content: '🥋'; }
+    .col-default .collection-emoji::after { content: '🎬'; }
+
+    /* ── VIDEOS PAGE ── */
+    .videos-page-header {
+      padding: 1.5rem 2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--white); }
+
+    .videos-page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
       font-weight: 700;
     }
 
-    /* ── FILTER BAR ── */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      align-items: center;
-    }
-
-    .filter-pill {
-      padding: 0.35rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      background: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .filter-pill:hover, .filter-pill.active {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(201,168,76,0.06);
-    }
-
-    .search-box {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 0.35rem 1rem;
-    }
-    .search-box input {
-      background: none;
-      border: none;
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      outline: none;
-      width: 150px;
-    }
-    .search-box input::placeholder { color: var(--muted); }
-
-    /* ── CONTENT GRID ── */
-    .content-grid {
+    /* ── VIDEO GRID ── */
+    .video-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
       gap: 1rem;
-      min-height: 200px;
+      padding: 1.5rem 2rem;
     }
 
-    .content-card {
-      cursor: pointer;
+    .video-card {
       position: relative;
       border-radius: 4px;
       overflow: hidden;
       background: var(--card-bg);
       aspect-ratio: 2/3;
+      cursor: pointer;
       transition: transform 0.25s, box-shadow 0.25s;
     }
-    .content-card:hover {
-      transform: scale(1.04) translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    .video-card:hover {
+      transform: scale(1.03) translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.6);
       z-index: 2;
     }
 
-    .card-thumb {
+    .video-thumb {
       width: 100%; height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .card-thumb-placeholder {
+    .video-thumb-placeholder {
       width: 100%; height: 100%;
       background: linear-gradient(160deg, #1c1408 0%, #0a0a0a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.1);
+      font-size: 2rem;
     }
 
-    .card-info {
+    .video-overlay {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 2rem 0.8rem 0.8rem;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.8rem;
     }
 
-    .card-title {
-      font-size: 0.76rem;
+    .video-title {
+      font-size: 0.75rem;
       font-weight: 500;
       line-height: 1.3;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.4rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .card-meta {
-      font-size: 0.65rem;
-      color: var(--gold);
-      letter-spacing: 0.04em;
+    .video-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
     }
 
-    .card-play-btn {
+    .video-action-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: var(--white);
+      width: 1.8rem; height: 1.8rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .video-action-btn:hover { background: rgba(255,255,255,0.2); }
+    .video-action-btn.liked { background: rgba(229,85,85,0.3); color: var(--red); }
+    .video-action-btn.saved { background: rgba(201,168,76,0.3); color: var(--gold); }
+
+    .like-count {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-left: -0.3rem;
+    }
+
+    .play-overlay {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -60%);
-      width: 3rem; height: 3rem;
+      width: 2.8rem; height: 2.8rem;
       background: rgba(201,168,76,0.9);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       opacity: 0;
       transition: opacity 0.25s, transform 0.25s;
     }
-    .content-card:hover .card-play-btn {
+    .video-card:hover .play-overlay {
       opacity: 1;
       transform: translate(-50%, -50%);
     }
 
-    .card-lock {
+    .lock-overlay {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -60%);
@@ -415,28 +473,35 @@
       opacity: 0;
       transition: opacity 0.25s, transform 0.25s;
     }
-    .content-card:hover .card-lock {
+    .video-card:hover .lock-overlay {
       opacity: 1;
       transform: translate(-50%, -50%);
     }
 
-    .card-badge {
+    .video-badge {
       position: absolute;
       top: 0.5rem; left: 0.5rem;
       background: var(--gold);
       color: var(--bg);
-      font-size: 0.58rem;
+      font-size: 0.55rem;
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 0.2rem 0.5rem;
+      padding: 0.15rem 0.45rem;
       border-radius: 2px;
     }
 
-    /* ── SKELETON LOADING ── */
+    /* ── SKELETON ── */
     .skeleton {
       aspect-ratio: 2/3;
       border-radius: 4px;
+      background: linear-gradient(90deg, var(--card-bg) 25%, #1e1e1e 50%, var(--card-bg) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    .skeleton-col {
+      border-radius: 6px;
+      height: 120px;
       background: linear-gradient(90deg, var(--card-bg) 25%, #1e1e1e 50%, var(--card-bg) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
@@ -447,71 +512,100 @@
     }
 
     .empty-state {
-      grid-column: 1 / -1;
       text-align: center;
       padding: 4rem 2rem;
       color: var(--muted);
       font-size: 0.88rem;
+      grid-column: 1/-1;
+    }
+
+    /* ── SEARCH ── */
+    .search-bar {
+      padding: 1rem 2rem 0;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      max-width: 400px;
+    }
+    .search-input-wrap input {
+      background: none;
+      border: none;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      width: 100%;
+    }
+    .search-input-wrap input::placeholder { color: var(--muted); }
+
+    /* ── WATCH LATER / DOWNLOADS PAGE ── */
+    .simple-page { padding: 1.5rem 2rem; }
+    .simple-page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
     /* ── SUBSCRIPTION SECTION ── */
-    .subscription-section {
+    .sub-section {
       background: var(--bg2);
       border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      padding: 3rem 2rem;
     }
 
-    .subscription-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: center;
-    }
+    .sub-inner { max-width: 900px; margin: 0 auto; text-align: center; }
 
     .sub-eyebrow {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     .sub-title {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 4vw, 3rem);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
       font-weight: 700;
-      margin-bottom: 1rem;
-      line-height: 1.1;
+      margin-bottom: 0.8rem;
     }
 
     .sub-desc {
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      margin: 0 auto 2.5rem;
+      max-width: 440px;
       line-height: 1.7;
-      max-width: 480px;
-      margin: 0 auto 3rem;
     }
 
     .plans-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .plan-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 2rem 1.5rem;
+      padding: 1.8rem 1.4rem;
       text-align: left;
-      position: relative;
-      transition: border-color 0.2s, transform 0.2s;
       cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
     }
     .plan-card:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-3px); }
     .plan-card.featured {
       border-color: var(--gold);
-      background: linear-gradient(135deg, #161410 0%, #161616 100%);
+      background: linear-gradient(135deg, #161410, #161616);
     }
     .plan-card.featured::before {
       content: 'Best Value';
@@ -520,81 +614,58 @@
       transform: translateX(-50%);
       background: var(--gold);
       color: var(--bg);
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.2rem 0.9rem;
+      padding: 0.2rem 0.8rem;
       border-radius: 0 0 4px 4px;
     }
 
-    .plan-name {
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.8rem;
-    }
-
-    .plan-price {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      line-height: 1;
-      margin-bottom: 0.2rem;
-    }
-
-    .plan-currency {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 400;
-      vertical-align: super;
-    }
-
-    .plan-period {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
-
-    .plan-features {
-      list-style: none;
-      margin-bottom: 1.5rem;
-    }
-    .plan-features li {
-      font-size: 0.8rem;
-      color: #8a8480;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .plan-features li::before {
-      content: '';
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--gold);
-      flex-shrink: 0;
-    }
+    .plan-name { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .plan-price { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 0.2rem; }
+    .plan-currency { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 400; vertical-align: super; }
+    .plan-period { font-size: 0.7rem; color: var(--muted); margin-bottom: 1.2rem; }
+    .plan-features { list-style: none; margin-bottom: 1.2rem; }
+    .plan-features li { font-size: 0.78rem; color: #8a8480; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
+    .plan-features li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
 
     .plan-btn {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.65rem;
       border: 1px solid var(--gold);
       background: transparent;
       color: var(--gold);
       font-family: 'DM Sans', sans-serif;
       font-size: 0.75rem;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
       border-radius: 2px;
       transition: all 0.2s;
     }
-    .plan-btn:hover, .plan-card.featured .plan-btn {
-      background: var(--gold);
-      color: var(--bg);
+    .plan-btn:hover, .plan-card.featured .plan-btn { background: var(--gold); color: var(--bg); }
+
+    /* ── STATUS BAR ── */
+    .sub-status-bar {
+      display: none;
+      padding: 0.5rem 2rem;
+      font-size: 0.75rem;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 60px;
+    }
+    .sub-status-bar.active-sub {
+      display: flex;
+      background: linear-gradient(90deg, rgba(76,175,125,0.12), transparent);
+      border-bottom: 1px solid rgba(76,175,125,0.15);
+      color: var(--green);
+    }
+    .sub-status-bar.expiring {
+      display: flex;
+      background: linear-gradient(90deg, rgba(201,168,76,0.12), transparent);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      color: var(--gold);
     }
 
     /* ── MODALS ── */
@@ -616,53 +687,33 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       width: 100%;
-      max-width: 460px;
+      max-width: 440px;
       overflow: hidden;
       animation: modalIn 0.3s ease;
     }
     @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.95) translateY(20px); }
+      from { opacity: 0; transform: scale(0.95) translateY(15px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .modal-header {
-      padding: 1.5rem 1.8rem;
+      padding: 1.3rem 1.6rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .modal-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 1.4rem;
-      line-height: 1;
-      transition: color 0.2s;
-    }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.3rem; line-height: 1; }
     .modal-close:hover { color: var(--white); }
-
-    .modal-body { padding: 1.5rem 1.8rem; }
-
-    /* Sign in modal */
-    .signin-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
+    .modal-body { padding: 1.3rem 1.6rem; }
 
     .google-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.8rem;
-      padding: 0.9rem;
+      padding: 0.85rem;
       background: #fff;
       color: #333;
       border: none;
@@ -671,41 +722,19 @@
       font-size: 0.88rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
       text-decoration: none;
+      width: 100%;
+      margin-bottom: 1rem;
+      transition: background 0.2s;
     }
-    .google-btn:hover { background: #f0f0f0; transform: translateY(-1px); }
+    .google-btn:hover { background: #f0f0f0; }
 
-    .signin-divider {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.75rem;
-      margin: 0.5rem 0;
-      position: relative;
-    }
-    .signin-divider::before, .signin-divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 40%;
-      height: 1px;
-      background: var(--border);
-    }
-    .signin-divider::before { left: 0; }
-    .signin-divider::after { right: 0; }
-
-    .signin-note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.6;
-    }
+    .signin-note { font-size: 0.72rem; color: var(--muted); text-align: center; line-height: 1.6; }
     .signin-note a { color: var(--gold); text-decoration: none; }
 
-    /* Payment modal */
     .payment-iframe {
       width: 100%;
-      height: 460px;
+      height: 440px;
       border: none;
       border-radius: 4px;
       background: var(--card-bg);
@@ -713,7 +742,7 @@
 
     .payment-loading {
       width: 100%;
-      height: 460px;
+      height: 440px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -723,7 +752,7 @@
       font-size: 0.85rem;
     }
 
-    /* Video player modal */
+    /* ── PLAYER ── */
     .player-modal {
       display: none;
       position: fixed;
@@ -738,30 +767,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.8rem 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0.7rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       flex-shrink: 0;
     }
-    .player-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem;
-    }
-    .player-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 1.5rem;
-      line-height: 1;
-    }
-    .player-close:hover { color: var(--white); }
+    .player-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; }
+    .player-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.3rem; }
 
     .player-container {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem;
     }
     .player-wrapper {
       width: 100%;
@@ -769,30 +787,50 @@
       aspect-ratio: 16/9;
       position: relative;
       background: #000;
-      border-radius: 4px;
-      overflow: hidden;
     }
-    .player-wrapper iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    .player-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
     .player-loading {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #000;
-      color: var(--muted);
-      font-size: 0.85rem;
       gap: 0.8rem;
+      color: var(--muted);
+      font-size: 0.82rem;
     }
 
+    /* ── RELATED VIDEOS ── */
+    .related-section {
+      padding: 0 1rem 1rem;
+      flex-shrink: 0;
+    }
+    .related-title { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.8rem; }
+    .related-scroll {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .related-scroll::-webkit-scrollbar { height: 3px; }
+    .related-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .related-card {
+      flex-shrink: 0;
+      width: 80px;
+      cursor: pointer;
+      border-radius: 3px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .related-card:hover { transform: scale(1.05); }
+    .related-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
+    .related-card-placeholder { width: 100%; aspect-ratio: 2/3; background: var(--card-bg); }
+    .related-card-title { font-size: 0.6rem; color: var(--muted); padding: 0.3rem 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
     .spinner {
-      width: 1.4rem; height: 1.4rem;
+      width: 1.3rem; height: 1.3rem;
       border: 2px solid var(--border);
       border-top-color: var(--gold);
       border-radius: 50%;
@@ -800,108 +838,75 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Subscription status bar */
-    .sub-status-bar {
-      display: none;
-      background: linear-gradient(90deg, rgba(76,175,125,0.15), rgba(76,175,125,0.05));
-      border-bottom: 1px solid rgba(76,175,125,0.2);
-      padding: 0.6rem 4rem;
-      font-size: 0.78rem;
-      color: var(--green);
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 64px;
-    }
-    .sub-status-bar.visible { display: flex; }
-    .sub-status-bar.expiring { 
-      background: linear-gradient(90deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
-      border-color: rgba(201,168,76,0.2);
-      color: var(--gold);
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--gold);
-      color: var(--bg);
-      padding: 0.8rem 1.8rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      z-index: 9000;
-      animation: fadeUp 0.3s ease;
-      white-space: nowrap;
-    }
-    .toast.error { background: var(--red); color: #fff; }
-
-    /* Footer */
-    footer {
+    /* ── FOOTER ── */
+    .footer {
       background: var(--bg);
       border-top: 1px solid var(--border);
-      padding: 3rem 4rem;
+      padding: 2.5rem 2rem;
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 3rem;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 2rem;
     }
 
-    .footer-tagline {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 240px;
-      margin-top: 0.8rem;
-    }
-
-    .footer-col h4 {
-      font-size: 0.7rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1.2rem;
-    }
+    .footer-tagline { font-size: 0.78rem; color: var(--muted); line-height: 1.6; margin-top: 0.6rem; max-width: 220px; }
+    .footer-col h4 { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
     .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 0.7rem; }
-    .footer-col ul li a {
-      color: #4a4540;
-      text-decoration: none;
-      font-size: 0.82rem;
-      transition: color 0.2s;
-    }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a { color: #4a4540; text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
     .footer-col ul li a:hover { color: var(--white); }
 
+    .social-footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    .social-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+    .social-icons { display: flex; justify-content: center; gap: 1.2rem; }
+    .social-icon { opacity: 0.5; transition: opacity 0.2s; }
+    .social-icon:hover { opacity: 1; }
+    .social-icon img { width: 24px; height: 24px; }
+
     .footer-bottom {
-      padding: 1.2rem 4rem;
+      padding: 1rem 2rem;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .footer-bottom p { font-size: 0.75rem; color: var(--muted); }
+    .footer-bottom p { font-size: 0.72rem; color: var(--muted); }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .nav-username { display: none; }
-      .hero-content { padding: 6rem 1.5rem 3rem; }
-      section { padding: 3rem 1.5rem; }
-      .sub-status-bar { padding: 0.6rem 1.5rem; }
-      .content-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-      .plans-grid { grid-template-columns: 1fr 1fr; }
-      footer { grid-template-columns: 1fr 1fr; padding: 2rem 1.5rem; gap: 2rem; }
-      .footer-bottom { padding: 1rem 1.5rem; flex-direction: column; gap: 0.5rem; }
-      .filter-bar { gap: 0.4rem; }
-      .search-box { margin-left: 0; width: 100%; }
-      .search-box input { width: 100%; }
-      .player-container { padding: 0; }
-      .player-wrapper { border-radius: 0; aspect-ratio: 16/9; }
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--bg);
+      padding: 0.7rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      z-index: 9000;
+      white-space: nowrap;
+      animation: fadeUp 0.3s ease;
     }
+    .toast.error { background: var(--red); color: #fff; }
+    .toast.info { background: var(--bg2); color: var(--white); border: 1px solid var(--border); }
 
-    @media (max-width: 480px) {
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-center { display: none; }
+      .footer { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 0.4rem; text-align: center; }
+      .player-container { padding: 0; }
+      .player-wrapper { aspect-ratio: 16/9; }
+      .plans-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
       .plans-grid { grid-template-columns: 1fr; }
+      .collections-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
     }
   </style>
 </head>
@@ -911,69 +916,74 @@
   const API = {
     AUTH:     'https://picha-worker.kerosoftz522.workers.dev',
     PAYMENTS: 'https://picha-payments.kerosoftz522.workers.dev',
+    CDN:      'https://vz-2493a002-12b.b-cdn.net',
   };
 
-  // Session management
   const session = {
     token: localStorage.getItem('picha_session'),
     user: JSON.parse(localStorage.getItem('picha_user') || 'null'),
     save(token, user) {
-      this.token = token;
-      this.user = user;
+      this.token = token; this.user = user;
       localStorage.setItem('picha_session', token);
       localStorage.setItem('picha_user', JSON.stringify(user));
     },
     clear() {
-      this.token = null;
-      this.user = null;
+      this.token = null; this.user = null;
       localStorage.removeItem('picha_session');
       localStorage.removeItem('picha_user');
     },
     isLoggedIn() { return !!this.token; },
     isSubscribed() {
-      return this.user?.subscribed && 
-             (!this.user?.subscriptionExpiry || Date.now() < this.user.subscriptionExpiry);
+      return this.user?.subscribed &&
+        (!this.user?.subscriptionExpiry || Date.now() < this.user.subscriptionExpiry);
     },
   };
+
+  // Likes stored as { videoId: count } — fetched from server
+  // Watch later stored locally
+  const watchLater = JSON.parse(localStorage.getItem('picha_watchlater') || '[]');
+  const likedVideos = JSON.parse(localStorage.getItem('picha_liked') || '[]');
+  // Downloads stored locally
+  const downloads = JSON.parse(localStorage.getItem('picha_downloads') || '[]');
+
+  function saveWatchLater() { localStorage.setItem('picha_watchlater', JSON.stringify(watchLater)); }
+  function saveLiked() { localStorage.setItem('picha_liked', JSON.stringify(likedVideos)); }
+  function saveDownloads() { localStorage.setItem('picha_downloads', JSON.stringify(downloads)); }
 </script>
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">Picha<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="#movies">Movies</a></li>
-    <li><a href="#series">Series</a></li>
-    <li><a href="#subscribe">Plans</a></li>
-  </ul>
+  <a href="#" class="logo" onclick="showPage('home')">Picha<span>.</span></a>
+
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="showPage('home')">Home</button>
+    <button class="nav-tab" onclick="showPage('watchlater')">Watch Later</button>
+    <button class="nav-tab" onclick="showPage('downloads')">Downloads</button>
+  </div>
+
   <div class="nav-right">
-    <!-- Logged out state -->
-    <button class="btn-signin" id="navSigninBtn" onclick="openSignin()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-3h-3v-3h3v-3l4.5 4.5-4.5 4.5z"/>
+    <!-- Search -->
+    <button class="nav-icon-btn" onclick="showPage('search')" title="Search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      Sign In
     </button>
-    <!-- Logged in state -->
+
+    <!-- Sign in / User -->
+    <button class="btn-signin" id="navSigninBtn" onclick="openSignin()">Sign In</button>
+
     <div class="nav-user" id="navUser" onclick="toggleUserMenu()">
       <img class="nav-avatar" id="navAvatar" src="" alt=""/>
-      <span class="nav-username" id="navUsername"></span>
       <div class="nav-dropdown" id="userDropdown">
         <div class="nav-dropdown-item" id="subStatusItem">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
           <span id="subStatusText">Not subscribed</span>
         </div>
-        <div class="nav-dropdown-item" onclick="openSubscribePlans()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-          </svg>
+        <div class="nav-dropdown-item" onclick="scrollToPlans()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           Manage Subscription
         </div>
         <div class="nav-dropdown-item danger" onclick="signOut()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-          </svg>
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
           Sign Out
         </div>
       </div>
@@ -981,169 +991,187 @@
   </div>
 </nav>
 
-<!-- SUBSCRIPTION STATUS BAR -->
-<div class="sub-status-bar" id="subStatusBar">
-  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-  </svg>
-  <span id="subStatusBarText"></span>
+<!-- STATUS BAR -->
+<div class="sub-status-bar" id="subStatusBar"></div>
+
+<!-- ══ HOME PAGE ══ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">East African Cinema</div>
+      <h1>Stories That<br/><em>Move</em> You</h1>
+      <p>Premium movies and series from East Africa. One subscription, unlimited stories — zero ads.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="heroBtn" onclick="handleHeroCTA()">Start Watching</button>
+        <button class="btn-outline" onclick="document.getElementById('collections-section').scrollIntoView({behavior:'smooth'})">Browse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collections -->
+  <div class="section" id="collections-section">
+    <h2 class="section-title">Browse by Genre</h2>
+    <div class="collections-grid" id="collectionsGrid">
+      <!-- Skeletons -->
+      <div class="skeleton-col"></div>
+      <div class="skeleton-col"></div>
+      <div class="skeleton-col"></div>
+      <div class="skeleton-col"></div>
+      <div class="skeleton-col"></div>
+      <div class="skeleton-col"></div>
+    </div>
+  </div>
+
+  <!-- Subscription Plans -->
+  <div class="sub-section" id="plans-section">
+    <div class="sub-inner">
+      <div class="sub-eyebrow">Choose Your Plan</div>
+      <h2 class="sub-title">Simple, Honest Pricing</h2>
+      <p class="sub-desc">No hidden fees. No ads. Cancel anytime.</p>
+      <div class="plans-grid">
+        <div class="plan-card" onclick="startPayment('daily')">
+          <div class="plan-name">Daily</div>
+          <div class="plan-price"><span class="plan-currency">UGX</span> 2,000</div>
+          <div class="plan-period">24 hour access</div>
+          <ul class="plan-features">
+            <li>Unlimited movies & series</li>
+            <li>HD streaming</li>
+            <li>No ads</li>
+          </ul>
+          <button class="plan-btn">Get Started</button>
+        </div>
+        <div class="plan-card" onclick="startPayment('monthly')">
+          <div class="plan-name">Monthly</div>
+          <div class="plan-price"><span class="plan-currency">UGX</span> 15,000</div>
+          <div class="plan-period">per month</div>
+          <ul class="plan-features">
+            <li>Unlimited movies & series</li>
+            <li>HD streaming</li>
+            <li>Downloads</li>
+            <li>Cancel anytime</li>
+          </ul>
+          <button class="plan-btn">Get Started</button>
+        </div>
+        <div class="plan-card featured" onclick="startPayment('quarterly')">
+          <div class="plan-name">Quarterly</div>
+          <div class="plan-price"><span class="plan-currency">UGX</span> 60,000</div>
+          <div class="plan-period">3 months · save 25%</div>
+          <ul class="plan-features">
+            <li>Unlimited movies & series</li>
+            <li>Full HD streaming</li>
+            <li>Downloads</li>
+            <li>2 devices</li>
+          </ul>
+          <button class="plan-btn">Get Started</button>
+        </div>
+        <div class="plan-card" onclick="startPayment('yearly')">
+          <div class="plan-name">Yearly</div>
+          <div class="plan-price"><span class="plan-currency">UGX</span> 120,000</div>
+          <div class="plan-period">per year · save 33%</div>
+          <ul class="plan-features">
+            <li>Unlimited movies & series</li>
+            <li>Full HD streaming</li>
+            <li>Downloads</li>
+            <li>3 devices</li>
+            <li>Early access</li>
+          </ul>
+          <button class="plan-btn">Get Started</button>
+        </div>
+      </div>
+      <p style="font-size:0.72rem;color:var(--muted);">PesaPal · M-Pesa · Airtel Money · Visa · Mastercard</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <a href="#" class="logo" onclick="showPage('home')">Picha<span>.</span></a>
+      <p class="footer-tagline">East Africa's home for premium cinema.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="https://keromisec9-prog.github.io/Privacy-Policy-/" target="_blank">Privacy Policy</a></li>
+        <li><a href="https://keromisec9-prog.github.io/Picha-Entertainment-/" target="_blank">DMCA</a></li>
+        <li><a href="https://keromisec9-prog.github.io/Contact-Form/" target="_blank">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="#" onclick="scrollToPlans()">Subscribe</a></li>
+        <li><a href="#" onclick="openSignin()">Sign In</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="social-footer">
+    <p class="social-label">Follow Us</p>
+    <div class="social-icons">
+      <a href="https://www.facebook.com/61580807354948/posts/122101411959026911/?app=fbl" target="_blank" class="social-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"/>
+      </a>
+      <a href="https://www.tiktok.com/@pichaentertainmen" target="_blank" class="social-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/3046/3046126.png" alt="TikTok"/>
+      </a>
+      <a href="https://wa.me/256767772898?text=Hello%20Picha%20Entertainment" target="_blank" class="social-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"/>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 Picha Entertainment. All rights reserved.</p>
+    <p>Built for East Africa 🌍</p>
+  </div>
 </div>
 
-<!-- HERO -->
-<section class="hero" id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">East African Cinema</div>
-    <h1>Stories That<br/><em>Move</em> You</h1>
-    <p>Premium East African movies and series, delivered in stunning quality. One subscription, unlimited stories — no ads, ever.</p>
-    <div class="hero-actions">
-      <button class="btn-primary" id="heroBtn" onclick="handleHeroCTA()">Start Watching</button>
-      <button class="btn-outline" onclick="document.getElementById('movies').scrollIntoView({behavior:'smooth'})">Browse Content</button>
-    </div>
+<!-- ══ COLLECTION VIDEOS PAGE ══ -->
+<div class="page" id="page-collection">
+  <div class="videos-page-header">
+    <button class="back-btn" onclick="showPage('home')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back
+    </button>
+    <h1 class="videos-page-title" id="collectionPageTitle">Collection</h1>
   </div>
-</section>
-
-<!-- MOVIES -->
-<section id="movies">
-  <div class="section-header">
-    <h2 class="section-title">Movies</h2>
-  </div>
-  <div class="filter-bar">
-    <button class="filter-pill active" onclick="filterContent('movies','all',this)">All</button>
-    <button class="filter-pill" onclick="filterContent('movies','Drama',this)">Drama</button>
-    <button class="filter-pill" onclick="filterContent('movies','Action',this)">Action</button>
-    <button class="filter-pill" onclick="filterContent('movies','Romance',this)">Romance</button>
-    <button class="filter-pill" onclick="filterContent('movies','Comedy',this)">Comedy</button>
-    <button class="filter-pill" onclick="filterContent('movies','Thriller',this)">Thriller</button>
-    <button class="filter-pill" onclick="filterContent('movies','Uganda',this)">Uganda</button>
-    <button class="filter-pill" onclick="filterContent('movies','Kenya',this)">Kenya</button>
-    <div class="search-box">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input type="text" placeholder="Search movies..." oninput="searchContent('movies',this.value)"/>
-    </div>
-  </div>
-  <div id="moviesGrid" class="content-grid"></div>
-</section>
-
-<!-- SERIES -->
-<section id="series" style="background:var(--bg2);border-top:1px solid var(--border);">
-  <div class="section-header">
-    <h2 class="section-title">TV Series</h2>
-  </div>
-  <div class="filter-bar">
-    <button class="filter-pill active" onclick="filterContent('series','all',this)">All</button>
-    <button class="filter-pill" onclick="filterContent('series','Drama',this)">Drama</button>
-    <button class="filter-pill" onclick="filterContent('series','Comedy',this)">Comedy</button>
-    <button class="filter-pill" onclick="filterContent('series','Thriller',this)">Thriller</button>
-    <button class="filter-pill" onclick="filterContent('series','Romance',this)">Romance</button>
-    <div class="search-box">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input type="text" placeholder="Search series..." oninput="searchContent('series',this.value)"/>
-    </div>
-  </div>
-  <div id="seriesGrid" class="content-grid"></div>
-</section>
-
-<!-- SUBSCRIPTION PLANS -->
-<section class="subscription-section" id="subscribe">
-  <div class="subscription-inner">
-    <div class="sub-eyebrow">Choose Your Plan</div>
-    <h2 class="sub-title">Simple, Honest Pricing</h2>
-    <p class="sub-desc">No hidden fees. No ads. Cancel anytime. Access everything from day one.</p>
-    <div class="plans-grid">
-      <div class="plan-card" onclick="startPayment('daily')">
-        <div class="plan-name">Daily</div>
-        <div class="plan-price"><span class="plan-currency">UGX</span> 2,000</div>
-        <div class="plan-period">24 hour access</div>
-        <ul class="plan-features">
-          <li>Unlimited movies & series</li>
-          <li>HD streaming</li>
-          <li>No ads</li>
-        </ul>
-        <button class="plan-btn">Get Started</button>
-      </div>
-      <div class="plan-card" onclick="startPayment('monthly')">
-        <div class="plan-name">Monthly</div>
-        <div class="plan-price"><span class="plan-currency">UGX</span> 15,000</div>
-        <div class="plan-period">per month</div>
-        <ul class="plan-features">
-          <li>Unlimited movies & series</li>
-          <li>HD streaming</li>
-          <li>No ads</li>
-          <li>Cancel anytime</li>
-        </ul>
-        <button class="plan-btn">Get Started</button>
-      </div>
-      <div class="plan-card featured" onclick="startPayment('quarterly')">
-        <div class="plan-name">Quarterly</div>
-        <div class="plan-price"><span class="plan-currency">UGX</span> 60,000</div>
-        <div class="plan-period">every 3 months · save 25%</div>
-        <ul class="plan-features">
-          <li>Unlimited movies & series</li>
-          <li>Full HD streaming</li>
-          <li>No ads</li>
-          <li>Watch on 2 devices</li>
-          <li>Cancel anytime</li>
-        </ul>
-        <button class="plan-btn">Get Started</button>
-      </div>
-      <div class="plan-card" onclick="startPayment('yearly')">
-        <div class="plan-name">Yearly</div>
-        <div class="plan-price"><span class="plan-currency">UGX</span> 120,000</div>
-        <div class="plan-period">per year · save 33%</div>
-        <ul class="plan-features">
-          <li>Unlimited movies & series</li>
-          <li>Full HD streaming</li>
-          <li>No ads</li>
-          <li>Watch on 3 devices</li>
-          <li>Early access to new titles</li>
-        </ul>
-        <button class="plan-btn">Get Started</button>
-      </div>
-    </div>
-    <p style="font-size:0.75rem;color:var(--muted);">Payments via PesaPal · M-Pesa · Airtel Money · Visa · Mastercard</p>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div>
-    <a href="#" class="logo">Picha<span>.</span></a>
-    <p class="footer-tagline">East Africa's home for premium cinema.</p>
-  </div>
-  <div class="footer-col">
-    <h4>Browse</h4>
-    <ul>
-      <li><a href="#movies">Movies</a></li>
-      <li><a href="#series">TV Series</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h4>Legal</h4>
-    <ul>
-      <li><a href="https://keromisec9-prog.github.io/Privacy-Policy-/" target="_blank">Privacy Policy</a></li>
-      <li><a href="https://keromisec9-prog.github.io/Picha-Entertainment-/" target="_blank">DMCA</a></li>
-      <li><a href="https://keromisec9-prog.github.io/Contact-Form/" target="_blank">Contact</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h4>Account</h4>
-    <ul>
-      <li><a href="#subscribe">Subscribe</a></li>
-      <li><a href="#" onclick="openSignin()">Sign In</a></li>
-    </ul>
-  </div>
-</footer>
-<div class="footer-bottom">
-  <p>© 2025 Picha Entertainment. All rights reserved.</p>
-  <p>Built for East Africa 🌍</p>
+  <div class="video-grid" id="collectionVideosGrid"></div>
 </div>
 
-<!-- SIGN IN MODAL -->
+<!-- ══ SEARCH PAGE ══ -->
+<div class="page" id="page-search">
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="Search movies, series..." id="searchInput" oninput="handleSearch(this.value)" autofocus/>
+    </div>
+  </div>
+  <div class="video-grid" id="searchResultsGrid">
+    <div class="empty-state">Start typing to search...</div>
+  </div>
+</div>
+
+<!-- ══ WATCH LATER PAGE ══ -->
+<div class="page" id="page-watchlater">
+  <div class="simple-page">
+    <h2 class="simple-page-title">Watch Later</h2>
+    <div class="video-grid" id="watchLaterGrid" style="padding:0;"></div>
+  </div>
+</div>
+
+<!-- ══ DOWNLOADS PAGE ══ -->
+<div class="page" id="page-downloads">
+  <div class="simple-page">
+    <h2 class="simple-page-title">Downloads</h2>
+    <div class="video-grid" id="downloadsGrid" style="padding:0;"></div>
+  </div>
+</div>
+
+<!-- ══ SIGN IN MODAL ══ -->
 <div class="modal-overlay" id="signinModal">
   <div class="modal">
     <div class="modal-header">
@@ -1151,35 +1179,31 @@
       <button class="modal-close" onclick="closeSignin()">×</button>
     </div>
     <div class="modal-body">
-      <div class="signin-options">
-        <a href="https://picha-worker.kerosoftz522.workers.dev/auth/google" class="google-btn">
-          <svg width="18" height="18" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </a>
-        <div class="signin-divider">secure login</div>
-        <p class="signin-note">
-          By signing in you agree to our 
-          <a href="https://keromisec9-prog.github.io/Privacy-Policy-/" target="_blank">Privacy Policy</a>. 
-          Your data is stored securely and never shared.
-        </p>
-      </div>
+      <a href="https://picha-worker.kerosoftz522.workers.dev/auth/google" class="google-btn">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </a>
+      <p class="signin-note">
+        By signing in you agree to our
+        <a href="https://keromisec9-prog.github.io/Privacy-Policy-/" target="_blank">Privacy Policy</a>.
+      </p>
     </div>
   </div>
 </div>
 
-<!-- PAYMENT MODAL -->
+<!-- ══ PAYMENT MODAL ══ -->
 <div class="modal-overlay" id="paymentModal">
-  <div class="modal" style="max-width:520px;">
+  <div class="modal" style="max-width:500px;">
     <div class="modal-header">
       <h3 class="modal-title" id="paymentModalTitle">Complete Payment</h3>
       <button class="modal-close" onclick="closePayment()">×</button>
     </div>
-    <div class="modal-body" style="padding:1rem 1.5rem;">
+    <div class="modal-body" style="padding:1rem;">
       <div class="payment-loading" id="paymentLoading">
         <div class="spinner"></div>
         <span>Preparing payment...</span>
@@ -1189,33 +1213,53 @@
   </div>
 </div>
 
-<!-- VIDEO PLAYER MODAL -->
+<!-- ══ VIDEO PLAYER MODAL ══ -->
 <div class="player-modal" id="playerModal">
   <div class="player-header">
-    <span class="player-title" id="playerTitle">Loading...</span>
+    <span class="player-title" id="playerTitle"></span>
     <button class="player-close" onclick="closePlayer()">×</button>
   </div>
   <div class="player-container">
     <div class="player-wrapper">
       <div class="player-loading" id="playerLoading">
         <div class="spinner"></div>
-        <span>Loading video...</span>
+        <span>Loading...</span>
       </div>
       <iframe id="playerFrame" allowfullscreen allow="autoplay; fullscreen"></iframe>
     </div>
+  </div>
+  <div class="related-section" id="relatedSection" style="display:none;">
+    <p class="related-title">More like this</p>
+    <div class="related-scroll" id="relatedScroll"></div>
   </div>
 </div>
 
 <script>
 // ── STATE ─────────────────────────────────────────────────────────────────────
-const state = {
-  movies: [], series: [],
-  filteredMovies: [], filteredSeries: [],
-};
+let allVideos = []; // all videos cache
+let currentCollectionId = null;
+let currentCollectionVideos = [];
+
+// ── PAGE ROUTER ───────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+
+  // Update nav tabs
+  const tabMap = { home: 0, watchlater: 1, downloads: 2 };
+  const tabs = document.querySelectorAll('.nav-tab');
+  if (tabMap[name] !== undefined) tabs[tabMap[name]].classList.add('active');
+
+  if (name === 'watchlater') renderWatchLater();
+  if (name === 'downloads') renderDownloads();
+  if (name === 'search') document.getElementById('searchInput').focus();
+
+  window.scrollTo(0, 0);
+}
 
 // ── ON LOAD ───────────────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  // Check for Google Auth callback params
   const params = new URLSearchParams(window.location.search);
   const sessionToken = params.get('session');
   const userName = params.get('name');
@@ -1223,11 +1267,8 @@ window.addEventListener('load', async () => {
   const userEmail = params.get('email');
 
   if (sessionToken && userName) {
-    // Fetch full user data from worker
     try {
-      const res = await fetch(`${API.AUTH}/me`, {
-        headers: { 'X-Session-Token': sessionToken }
-      });
+      const res = await fetch(`${API.AUTH}/me`, { headers: { 'X-Session-Token': sessionToken } });
       const user = await res.json();
       session.save(sessionToken, user);
     } catch {
@@ -1238,153 +1279,353 @@ window.addEventListener('load', async () => {
         subscribed: false,
       });
     }
-    // Clean URL
     window.history.replaceState({}, '', window.location.pathname);
     showToast(`Welcome, ${decodeURIComponent(userName).split(' ')[0]}! 👋`);
   }
 
-  // Check for payment success callback
   const paymentStatus = params.get('payment');
-  const paymentPlan = params.get('plan');
-  const paymentSession = params.get('session');
-  if (paymentStatus === 'success' && paymentSession) {
+  if (paymentStatus === 'success') {
     window.history.replaceState({}, '', window.location.pathname);
-    // Refresh user data
     await refreshUser();
-    showToast('🎉 Payment successful! Welcome to Picha Entertainment.');
+    showToast('🎉 Payment successful! Enjoy unlimited streaming.');
   }
 
   updateUI();
-  fetchVideos('movies');
-  fetchVideos('series');
+  loadCollections();
 });
 
-// ── AUTH UI ───────────────────────────────────────────────────────────────────
-function updateUI() {
-  const loggedIn = session.isLoggedIn();
-  const subscribed = session.isSubscribed();
-
-  document.getElementById('navSigninBtn').style.display = loggedIn ? 'none' : 'flex';
-  
-  const navUser = document.getElementById('navUser');
-  navUser.classList.toggle('visible', loggedIn);
-
-  if (loggedIn && session.user) {
-    document.getElementById('navAvatar').src = session.user.picture || '';
-    document.getElementById('navUsername').textContent = session.user.name?.split(' ')[0] || '';
-
-    // Subscription status in dropdown
-    const subText = document.getElementById('subStatusText');
-    if (subscribed) {
-      const days = session.user.subscriptionExpiry
-        ? Math.ceil((session.user.subscriptionExpiry - Date.now()) / (1000 * 60 * 60 * 24))
-        : 0;
-      subText.textContent = `${session.user.subscriptionPlan} · ${days}d left`;
-      subText.parentElement.innerHTML = `
-        <span class="sub-badge">Active</span>
-        <span>${session.user.subscriptionPlan || 'Subscribed'} · ${days} days left</span>
-      `;
-    } else {
-      subText.textContent = 'Not subscribed';
-    }
-
-    // Status bar
-    const bar = document.getElementById('subStatusBar');
-    const barText = document.getElementById('subStatusBarText');
-    if (subscribed) {
-      const days = session.user.subscriptionExpiry
-        ? Math.ceil((session.user.subscriptionExpiry - Date.now()) / (1000 * 60 * 60 * 24))
-        : 0;
-      bar.classList.add('visible');
-      if (days <= 3) {
-        bar.classList.add('expiring');
-        barText.textContent = `⚠️ Your subscription expires in ${days} day${days !== 1 ? 's' : ''}. Renew now to keep watching.`;
-      } else {
-        barText.textContent = `✓ Subscribed · ${session.user.subscriptionPlan} plan · ${days} days remaining`;
-      }
-    } else {
-      bar.classList.remove('visible');
-    }
-  }
-
-  // Hero button
-  const heroBtn = document.getElementById('heroBtn');
-  if (subscribed) {
-    heroBtn.textContent = 'Browse Content';
-    heroBtn.onclick = () => document.getElementById('movies').scrollIntoView({ behavior: 'smooth' });
-  } else if (loggedIn) {
-    heroBtn.textContent = 'Subscribe Now';
-    heroBtn.onclick = openSubscribePlans;
-  } else {
-    heroBtn.textContent = 'Start Watching';
-    heroBtn.onclick = openSignin;
-  }
-}
-
-async function refreshUser() {
-  if (!session.token) return;
+// ── COLLECTIONS ───────────────────────────────────────────────────────────────
+async function loadCollections() {
+  const grid = document.getElementById('collectionsGrid');
   try {
-    const res = await fetch(`${API.AUTH}/me`, {
-      headers: { 'X-Session-Token': session.token }
-    });
-    if (res.ok) {
-      const user = await res.json();
-      session.save(session.token, user);
-      updateUI();
+    const res = await fetch(`${API.AUTH}/collections`);
+    const data = await res.json();
+    const collections = data.items || [];
+
+    if (!collections.length) {
+      grid.innerHTML = '<div class="empty-state">No collections yet.</div>';
+      return;
     }
-  } catch {}
-}
 
-// ── SIGN IN / OUT ─────────────────────────────────────────────────────────────
-function openSignin() {
-  document.getElementById('signinModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeSignin() {
-  document.getElementById('signinModal').classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-async function signOut() {
-  if (session.token) {
-    fetch(`${API.AUTH}/auth/logout`, {
-      headers: { 'X-Session-Token': session.token }
-    }).catch(() => {});
+    grid.innerHTML = collections.map(col => {
+      const emojiClass = getEmojiClass(col.name);
+      return `
+        <div class="collection-card ${emojiClass}" onclick="openCollection('${col.id}','${esc(col.name)}')">
+          <div class="collection-emoji"></div>
+          <div class="collection-name">${esc(col.name)}</div>
+          <div class="collection-count">${col.videoCount || 0} videos</div>
+        </div>`;
+    }).join('');
+  } catch {
+    grid.innerHTML = '<div class="empty-state">Could not load collections.</div>';
   }
-  session.clear();
-  updateUI();
-  toggleUserMenu(true);
-  showToast('Signed out successfully.');
 }
 
-function toggleUserMenu(forceClose = false) {
-  const dropdown = document.getElementById('userDropdown');
-  if (forceClose) { dropdown.classList.remove('open'); return; }
-  dropdown.classList.toggle('open');
+function getEmojiClass(name) {
+  const n = name.toLowerCase();
+  if (n.includes('action')) return 'col-Action';
+  if (n.includes('adventure')) return 'col-Adventure';
+  if (n.includes('animation') || n.includes('animated')) return 'col-Animation';
+  if (n.includes('comedy')) return 'col-Comedy';
+  if (n.includes('crime')) return 'col-Crime';
+  if (n.includes('documentary')) return 'col-Documentary';
+  if (n.includes('series')) return 'col-Series';
+  if (n.includes('family')) return 'col-Family';
+  if (n.includes('fantasy')) return 'col-Fantasy';
+  if (n.includes('history')) return 'col-History';
+  if (n.includes('horror')) return 'col-Horror';
+  if (n.includes('kids')) return 'col-Kids';
+  if (n.includes('kung') || n.includes('martial')) return 'col-Kungfu';
+  if (n.includes('music')) return 'col-Music';
+  if (n.includes('mystery')) return 'col-Mystery';
+  if (n.includes('romance')) return 'col-Romance';
+  if (n.includes('sci')) return 'col-SciFi';
+  if (n.includes('sport')) return 'col-Sports';
+  if (n.includes('thriller')) return 'col-Thriller';
+  if (n.includes('war')) return 'col-War';
+  return 'col-default';
 }
 
-document.addEventListener('click', e => {
-  if (!e.target.closest('#navUser')) {
-    document.getElementById('userDropdown').classList.remove('open');
+// ── OPEN COLLECTION ───────────────────────────────────────────────────────────
+async function openCollection(collectionId, collectionName) {
+  currentCollectionId = collectionId;
+  document.getElementById('collectionPageTitle').textContent = collectionName;
+  showPage('collection');
+
+  const grid = document.getElementById('collectionVideosGrid');
+  grid.innerHTML = skeletons(8);
+
+  try {
+    const res = await fetch(`${API.AUTH}/videos?collectionId=${collectionId}`);
+    const data = await res.json();
+    const videos = data.items || [];
+    currentCollectionVideos = videos;
+
+    // Fetch like counts for all videos
+    const likeCounts = await fetchLikeCounts(videos.map(v => v.guid));
+    renderVideoGrid(grid, videos, likeCounts);
+  } catch {
+    grid.innerHTML = '<div class="empty-state">Could not load videos.</div>';
   }
-});
+}
 
-// ── PAYMENT ───────────────────────────────────────────────────────────────────
-async function startPayment(plan) {
-  if (!session.isLoggedIn()) {
-    openSignin();
-    showToast('Please sign in first to subscribe.', 'error');
+// ── FETCH LIKE COUNTS ─────────────────────────────────────────────────────────
+async function fetchLikeCounts(videoIds) {
+  const counts = {};
+  await Promise.all(videoIds.map(async id => {
+    try {
+      const res = await fetch(`${API.AUTH}/likes?videoId=${id}`);
+      const data = await res.json();
+      counts[id] = data.likes || 0;
+    } catch { counts[id] = 0; }
+  }));
+  return counts;
+}
+
+// ── RENDER VIDEO GRID ─────────────────────────────────────────────────────────
+function renderVideoGrid(grid, videos, likeCounts = {}) {
+  if (!videos.length) {
+    grid.innerHTML = '<div class="empty-state">No videos in this collection yet.</div>';
     return;
   }
 
-  const planLabels = {
+  grid.innerHTML = videos.map(v => {
+    const thumb = v.thumbnailFileName
+      ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}`
+      : null;
+    const isLiked = likedVideos.includes(v.guid);
+    const isSaved = watchLater.some(w => w.guid === v.guid);
+    const likes = likeCounts[v.guid] || 0;
+    const subscribed = session.isSubscribed();
+
+    return `
+      <div class="video-card" id="card-${v.guid}">
+        ${thumb
+          ? `<img class="video-thumb" src="${thumb}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'">`
+          : `<div class="video-thumb-placeholder">🎬</div>`}
+
+        ${subscribed
+          ? `<div class="play-overlay" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="#0a0a0a"><path d="M0 0l12 7-12 7z"/></svg>
+             </div>`
+          : `<div class="lock-overlay" onclick="scrollToPlans()">
+              <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+             </div>`}
+
+        <div class="video-overlay" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
+          <div class="video-title">${esc(v.title)}</div>
+          <div class="video-actions" onclick="event.stopPropagation()">
+            <!-- Like -->
+            <button class="video-action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${v.guid}',this)" title="Like">
+              <svg width="11" height="11" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <span class="like-count" id="likes-${v.guid}">${likes > 0 ? likes : ''}</span>
+
+            <!-- Watch Later -->
+            <button class="video-action-btn ${isSaved ? 'saved' : ''}" onclick="toggleWatchLater(${JSON.stringify(v).replace(/"/g,'&quot;')},this)" title="Watch Later">
+              <svg width="11" height="11" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </button>
+
+            <!-- Download -->
+            <button class="video-action-btn" onclick="handleDownload('${v.guid}','${esc(v.title)}',this)" title="Download">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── LIKE ──────────────────────────────────────────────────────────────────────
+async function toggleLike(videoId, btn) {
+  const isLiked = likedVideos.includes(videoId);
+
+  if (isLiked) {
+    likedVideos.splice(likedVideos.indexOf(videoId), 1);
+    btn.classList.remove('liked');
+  } else {
+    likedVideos.push(videoId);
+    btn.classList.add('liked');
+    // Increment on server
+    fetch(`${API.AUTH}/likes?videoId=${videoId}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        const el = document.getElementById(`likes-${videoId}`);
+        if (el) el.textContent = data.likes > 0 ? data.likes : '';
+      }).catch(() => {});
+  }
+
+  saveLiked();
+}
+
+// ── WATCH LATER ───────────────────────────────────────────────────────────────
+function toggleWatchLater(video, btn) {
+  const idx = watchLater.findIndex(w => w.guid === video.guid);
+  if (idx > -1) {
+    watchLater.splice(idx, 1);
+    btn.classList.remove('saved');
+    showToast('Removed from Watch Later', 'info');
+  } else {
+    watchLater.push(video);
+    btn.classList.add('saved');
+    showToast('Added to Watch Later ✓');
+  }
+  saveWatchLater();
+}
+
+function renderWatchLater() {
+  const grid = document.getElementById('watchLaterGrid');
+  if (!watchLater.length) {
+    grid.innerHTML = '<div class="empty-state">No videos saved yet.<br>Tap the clock icon on any video to save it.</div>';
+    return;
+  }
+  renderVideoGrid(grid, watchLater, {});
+}
+
+// ── DOWNLOAD ──────────────────────────────────────────────────────────────────
+async function handleDownload(videoId, title, btn) {
+  if (!session.isLoggedIn()) { openSignin(); return; }
+  if (!session.isSubscribed()) { scrollToPlans(); showToast('Subscribe to download videos.', 'error'); return; }
+
+  showToast('Preparing download...', 'info');
+
+  try {
+    const res = await fetch(`${API.AUTH}/download?videoId=${videoId}`, {
+      headers: { 'X-Session-Token': session.token }
+    });
+    const data = await res.json();
+
+    if (data.url) {
+      // Save to downloads list
+      if (!downloads.find(d => d.guid === videoId)) {
+        downloads.push({ guid: videoId, title, url: data.url, downloadedAt: Date.now() });
+        saveDownloads();
+      }
+
+      // Trigger browser download
+      const a = document.createElement('a');
+      a.href = data.url;
+      a.download = `${title}.mp4`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Download started! ⬇️');
+    } else {
+      showToast(data.error || 'Download failed.', 'error');
+    }
+  } catch {
+    showToast('Download failed. Please try again.', 'error');
+  }
+}
+
+function renderDownloads() {
+  const grid = document.getElementById('downloadsGrid');
+  if (!downloads.length) {
+    grid.innerHTML = '<div class="empty-state">No downloads yet.<br>Subscribe and tap ⬇️ on any video to download.</div>';
+    return;
+  }
+  renderVideoGrid(grid, downloads.map(d => ({ guid: d.guid, title: d.title, thumbnailFileName: null })), {});
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+let searchTimer;
+async function handleSearch(query) {
+  clearTimeout(searchTimer);
+  const grid = document.getElementById('searchResultsGrid');
+
+  if (!query.trim()) {
+    grid.innerHTML = '<div class="empty-state">Start typing to search...</div>';
+    return;
+  }
+
+  searchTimer = setTimeout(async () => {
+    grid.innerHTML = skeletons(6);
+    try {
+      const res = await fetch(`${API.AUTH}/videos?search=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      const videos = data.items || [];
+      renderVideoGrid(grid, videos, {});
+    } catch {
+      grid.innerHTML = '<div class="empty-state">Search failed. Try again.</div>';
+    }
+  }, 400);
+}
+
+// ── PLAY VIDEO ────────────────────────────────────────────────────────────────
+async function handlePlay(videoId, title) {
+  if (!session.isLoggedIn()) { openSignin(); return; }
+  if (!session.isSubscribed()) { scrollToPlans(); showToast('Subscribe to watch.', 'error'); return; }
+
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerFrame').src = '';
+  document.getElementById('playerLoading').style.display = 'flex';
+  document.getElementById('relatedSection').style.display = 'none';
+  document.getElementById('playerModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const res = await fetch(`${API.AUTH}/sign?videoId=${videoId}`, {
+      headers: { 'X-Session-Token': session.token }
+    });
+    const data = await res.json();
+
+    if (data.url) {
+      document.getElementById('playerLoading').style.display = 'none';
+      document.getElementById('playerFrame').src = data.url;
+      showRelated(videoId);
+    } else if (data.error?.includes('expired')) {
+      closePlayer();
+      await refreshUser();
+      scrollToPlans();
+      showToast('Subscription expired. Please renew.', 'error');
+    } else {
+      closePlayer();
+      showToast(data.error || 'Failed to load video.', 'error');
+    }
+  } catch {
+    closePlayer();
+    showToast('Failed to load video.', 'error');
+  }
+}
+
+function showRelated(currentVideoId) {
+  const related = currentCollectionVideos.filter(v => v.guid !== currentVideoId).slice(0, 10);
+  if (!related.length) return;
+
+  const scroll = document.getElementById('relatedScroll');
+  scroll.innerHTML = related.map(v => {
+    const thumb = v.thumbnailFileName ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}` : null;
+    return `
+      <div class="related-card" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
+        ${thumb
+          ? `<img src="${thumb}" alt="${esc(v.title)}" loading="lazy">`
+          : `<div class="related-card-placeholder"></div>`}
+        <div class="related-card-title">${esc(v.title)}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('relatedSection').style.display = 'block';
+}
+
+function closePlayer() {
+  document.getElementById('playerModal').classList.remove('active');
+  document.getElementById('playerFrame').src = '';
+  document.body.style.overflow = '';
+}
+
+// ── PAYMENT ───────────────────────────────────────────────────────────────────
+async function startPayment(plan) {
+  if (!session.isLoggedIn()) { openSignin(); showToast('Please sign in first.', 'error'); return; }
+
+  const labels = {
     daily: 'Daily Pass — UGX 2,000',
     monthly: 'Monthly — UGX 15,000',
     quarterly: 'Quarterly — UGX 60,000',
     yearly: 'Yearly — UGX 120,000',
   };
 
-  document.getElementById('paymentModalTitle').textContent = planLabels[plan] || 'Complete Payment';
+  document.getElementById('paymentModalTitle').textContent = labels[plan];
   document.getElementById('paymentLoading').style.display = 'flex';
   document.getElementById('paymentFrame').style.display = 'none';
   document.getElementById('paymentModal').classList.add('active');
@@ -1393,13 +1634,9 @@ async function startPayment(plan) {
   try {
     const res = await fetch(`${API.PAYMENTS}/pay`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Session-Token': session.token,
-      },
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': session.token },
       body: JSON.stringify({ plan }),
     });
-
     const data = await res.json();
 
     if (data.redirectUrl) {
@@ -1407,16 +1644,14 @@ async function startPayment(plan) {
       const frame = document.getElementById('paymentFrame');
       frame.src = data.redirectUrl;
       frame.style.display = 'block';
-
-      // Store tracking ID for verification
       sessionStorage.setItem('picha_order_tracking', data.orderTrackingId);
     } else {
       closePayment();
-      showToast(data.error || 'Failed to initiate payment. Please try again.', 'error');
+      showToast(data.error || 'Payment failed. Try again.', 'error');
     }
-  } catch (err) {
+  } catch {
     closePayment();
-    showToast('Payment service unavailable. Please try again.', 'error');
+    showToast('Payment service unavailable.', 'error');
   }
 }
 
@@ -1426,179 +1661,7 @@ function closePayment() {
   document.body.style.overflow = '';
 }
 
-function openSubscribePlans() {
-  toggleUserMenu(true);
-  document.getElementById('subscribe').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ── PLAY VIDEO ────────────────────────────────────────────────────────────────
-async function handlePlay(videoId, title) {
-  if (!session.isLoggedIn()) {
-    openSignin();
-    return;
-  }
-
-  if (!session.isSubscribed()) {
-    openSubscribePlans();
-    showToast('Subscribe to watch unlimited content.', 'error');
-    return;
-  }
-
-  // Open player
-  document.getElementById('playerTitle').textContent = title;
-  document.getElementById('playerFrame').src = '';
-  document.getElementById('playerLoading').style.display = 'flex';
-  document.getElementById('playerModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  try {
-    const res = await fetch(`${API.AUTH}/sign?videoId=${videoId}`, {
-      headers: { 'X-Session-Token': session.token }
-    });
-
-    const data = await res.json();
-
-    if (data.url) {
-      document.getElementById('playerLoading').style.display = 'none';
-      document.getElementById('playerFrame').src = data.url;
-    } else if (data.error === 'Your subscription has expired. Please renew.') {
-      closePlayer();
-      await refreshUser();
-      openSubscribePlans();
-      showToast('Your subscription has expired. Please renew.', 'error');
-    } else {
-      closePlayer();
-      showToast(data.error || 'Failed to load video.', 'error');
-    }
-  } catch {
-    closePlayer();
-    showToast('Failed to load video. Please try again.', 'error');
-  }
-}
-
-function closePlayer() {
-  document.getElementById('playerModal').classList.remove('active');
-  document.getElementById('playerFrame').src = '';
-  document.body.style.overflow = '';
-}
-
-// ── FETCH VIDEOS ──────────────────────────────────────────────────────────────
-async function fetchVideos(type) {
-  const gridId = type === 'movies' ? 'moviesGrid' : 'seriesGrid';
-  const grid = document.getElementById(gridId);
-  grid.innerHTML = skeletons(8);
-
-  try {
-    const search = type === 'movies' ? 'movie' : 'series';
-    const res = await fetch(`${API.AUTH}/videos?search=${search}`);
-    const data = await res.json();
-    const videos = data.items || [];
-
-    if (type === 'movies') { state.movies = videos; state.filteredMovies = videos; }
-    else { state.series = videos; state.filteredSeries = videos; }
-
-    renderGrid(type, videos);
-  } catch {
-    renderGrid(type, []);
-  }
-}
-
-function renderGrid(type, videos) {
-  const grid = document.getElementById(type === 'movies' ? 'moviesGrid' : 'seriesGrid');
-
-  if (!videos.length) {
-    grid.innerHTML = `<div class="empty-state">No content yet. Check back soon!</div>`;
-    return;
-  }
-
-  grid.innerHTML = videos.map(v => {
-    const tags = (v.metaTags || []).map(t => t.value);
-    const genre = tags.find(t => t.startsWith('genre:'))?.replace('genre:', '') || '';
-    const country = tags.find(t => t.startsWith('country:'))?.replace('country:', '') || '';
-    const isNew = tags.includes('new');
-    const meta = [genre, country].filter(Boolean).join(' · ');
-    const thumb = v.thumbnailFileName
-      ? `https://vz-619035.b-cdn.net/${v.guid}/${v.thumbnailFileName}`
-      : null;
-
-    const isSubscribed = session.isSubscribed();
-
-    return `
-      <div class="content-card" onclick="handlePlay('${v.guid}','${esc(v.title)}')">
-        ${thumb
-          ? `<img class="card-thumb" src="${thumb}" alt="${esc(v.title)}" loading="lazy" onerror="this.style.display='none'">`
-          : `<div class="card-thumb-placeholder"></div>`}
-        ${isNew ? `<div class="card-badge">New</div>` : ''}
-        ${isSubscribed
-          ? `<div class="card-play-btn"><svg width="11" height="13" viewBox="0 0 12 14" fill="#0a0a0a"><path d="M0 0l12 7-12 7z"/></svg></div>`
-          : `<div class="card-lock"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>`
-        }
-        <div class="card-info">
-          <div class="card-title">${esc(v.title)}</div>
-          ${meta ? `<div class="card-meta">${esc(meta)}</div>` : ''}
-        </div>
-      </div>`;
-  }).join('');
-}
-
-// ── FILTER & SEARCH ───────────────────────────────────────────────────────────
-function filterContent(type, value, btn) {
-  btn.closest('.filter-bar').querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  const videos = type === 'movies' ? state.movies : state.series;
-  const filtered = value === 'all' ? videos : videos.filter(v => {
-    const tags = (v.metaTags || []).map(t => t.value.toLowerCase());
-    return tags.some(t => t.includes(value.toLowerCase())) ||
-           (v.title || '').toLowerCase().includes(value.toLowerCase());
-  });
-  renderGrid(type, filtered);
-}
-
-const searchTimers = {};
-function searchContent(type, query) {
-  clearTimeout(searchTimers[type]);
-  searchTimers[type] = setTimeout(() => {
-    const videos = type === 'movies' ? state.movies : state.series;
-    const q = query.toLowerCase().trim();
-    renderGrid(type, q ? videos.filter(v => (v.title || '').toLowerCase().includes(q)) : videos);
-  }, 300);
-}
-
-// ── HANDLE HERO CTA ───────────────────────────────────────────────────────────
-function handleHeroCTA() {
-  if (!session.isLoggedIn()) openSignin();
-  else if (!session.isSubscribed()) openSubscribePlans();
-  else document.getElementById('movies').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'success') {
-  document.querySelectorAll('.toast').forEach(t => t.remove());
-  const t = document.createElement('div');
-  t.className = `toast${type === 'error' ? ' error' : ''}`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function skeletons(n) {
-  return `<div style="display:contents">${'<div class="skeleton"></div>'.repeat(n)}</div>`;
-}
-
-function esc(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// Close modals on overlay click
-document.getElementById('signinModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeSignin();
-});
-document.getElementById('paymentModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closePayment();
-});
-
-// Periodically verify payment if modal is open
+// Poll for payment completion
 setInterval(async () => {
   const trackingId = sessionStorage.getItem('picha_order_tracking');
   if (!trackingId || !document.getElementById('paymentModal').classList.contains('active')) return;
@@ -1612,12 +1675,128 @@ setInterval(async () => {
       session.save(session.token, data.user);
       closePayment();
       updateUI();
-      renderGrid('movies', state.movies);
-      renderGrid('series', state.series);
       showToast('🎉 Payment confirmed! Enjoy unlimited streaming.');
     }
   } catch {}
 }, 5000);
+
+// ── AUTH UI ───────────────────────────────────────────────────────────────────
+function updateUI() {
+  const loggedIn = session.isLoggedIn();
+  const subscribed = session.isSubscribed();
+
+  document.getElementById('navSigninBtn').style.display = loggedIn ? 'none' : 'block';
+  const navUser = document.getElementById('navUser');
+  navUser.classList.toggle('visible', loggedIn);
+
+  if (loggedIn && session.user) {
+    document.getElementById('navAvatar').src = session.user.picture || '';
+
+    const days = session.user.subscriptionExpiry
+      ? Math.ceil((session.user.subscriptionExpiry - Date.now()) / (1000 * 60 * 60 * 24))
+      : 0;
+
+    document.getElementById('subStatusText').textContent = subscribed
+      ? `${session.user.subscriptionPlan} · ${days}d left`
+      : 'Not subscribed';
+
+    const bar = document.getElementById('subStatusBar');
+    bar.className = 'sub-status-bar';
+    bar.innerHTML = '';
+
+    if (subscribed) {
+      if (days <= 3) {
+        bar.classList.add('expiring');
+        bar.innerHTML = `⚠️ Subscription expires in ${days} day${days !== 1 ? 's' : ''}. <a href="#" onclick="scrollToPlans()" style="color:inherit;margin-left:0.5rem;">Renew now</a>`;
+      } else {
+        bar.classList.add('active-sub');
+        bar.innerHTML = `✓ ${session.user.subscriptionPlan} plan · ${days} days remaining`;
+      }
+    }
+  }
+
+  // Hero button
+  const heroBtn = document.getElementById('heroBtn');
+  if (subscribed) {
+    heroBtn.textContent = 'Browse Content';
+    heroBtn.onclick = () => document.getElementById('collections-section').scrollIntoView({ behavior: 'smooth' });
+  } else if (loggedIn) {
+    heroBtn.textContent = 'Subscribe Now';
+    heroBtn.onclick = scrollToPlans;
+  } else {
+    heroBtn.textContent = 'Start Watching';
+    heroBtn.onclick = openSignin;
+  }
+}
+
+async function refreshUser() {
+  if (!session.token) return;
+  try {
+    const res = await fetch(`${API.AUTH}/me`, { headers: { 'X-Session-Token': session.token } });
+    if (res.ok) { const user = await res.json(); session.save(session.token, user); updateUI(); }
+  } catch {}
+}
+
+function openSignin() {
+  document.getElementById('signinModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSignin() {
+  document.getElementById('signinModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+async function signOut() {
+  if (session.token) fetch(`${API.AUTH}/auth/logout`, { headers: { 'X-Session-Token': session.token } }).catch(() => {});
+  session.clear();
+  updateUI();
+  toggleUserMenu(true);
+  showToast('Signed out.');
+}
+
+function toggleUserMenu(forceClose = false) {
+  const d = document.getElementById('userDropdown');
+  if (forceClose) { d.classList.remove('open'); return; }
+  d.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#navUser')) document.getElementById('userDropdown').classList.remove('open');
+});
+
+document.getElementById('signinModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSignin(); });
+document.getElementById('paymentModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePayment(); });
+
+function handleHeroCTA() {
+  if (!session.isLoggedIn()) openSignin();
+  else if (!session.isSubscribed()) scrollToPlans();
+  else document.getElementById('collections-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function scrollToPlans() {
+  toggleUserMenu(true);
+  showPage('home');
+  setTimeout(() => document.getElementById('plans-section').scrollIntoView({ behavior: 'smooth' }), 100);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = `toast${type === 'error' ? ' error' : type === 'info' ? ' info' : ''}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function skeletons(n) {
+  return Array(n).fill('<div class="skeleton"></div>').join('');
+}
+
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 </script>
 </body>
 </html>

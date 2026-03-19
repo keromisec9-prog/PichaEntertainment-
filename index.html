@@ -1379,8 +1379,20 @@ async function openCollection(collectionId, collectionName) {
     videos.forEach(async v => {
       const poster = await getTMDBPoster(v.title);
       if (poster) {
-        const img = grid.querySelector(`#card-${v.guid} .video-thumb`);
-        if (img) { img.src = poster; img.style.display = 'block'; }
+        const card = grid.querySelector(`#card-${v.guid}`);
+        if (!card) return;
+        let img = card.querySelector('.video-thumb');
+        if (!img) {
+          // Replace placeholder with img
+          const placeholder = card.querySelector('.video-thumb-placeholder');
+          if (placeholder) {
+            img = document.createElement('img');
+            img.className = 'video-thumb';
+            img.alt = v.title;
+            placeholder.replaceWith(img);
+          }
+        }
+        if (img) img.src = poster;
       }
     });
   } catch {

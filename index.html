@@ -913,6 +913,8 @@
 <body>
 
 <script>
+  const TMDB_KEY = '3ba29e8934b640ae467a31241cd2f0fd';
+  const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
   const API = {
     AUTH:     'https://picha-worker.kerosoftz522.workers.dev',
     PAYMENTS: 'https://picha-payments.kerosoftz522.workers.dev',
@@ -1363,7 +1365,12 @@ async function openCollection(collectionId, collectionName) {
 
     // Fetch like counts for all videos
     const likeCounts = await fetchLikeCounts(videos.map(v => v.guid));
-    renderVideoGrid(grid, videos, likeCounts);
+    // Fetch TMDB posters in parallel
+    const videosWithPosters = await Promise.all(videos.map(async v => {
+      const poster = await getTMDBPoster(v.title);
+      return { ...v, tmdbPoster: poster };
+    }));
+    renderVideoGrid(grid, videosWithPosters, likeCounts);
   } catch {
     grid.innerHTML = '<div class="empty-state">Could not load videos.</div>';
   }
@@ -1390,9 +1397,9 @@ function renderVideoGrid(grid, videos, likeCounts = {}) {
   }
 
   grid.innerHTML = videos.map(v => {
-    const thumb = v.thumbnailFileName
+    const thumb = v.tmdbPoster || (v.thumbnailFileName
       ? `${API.CDN}/${v.guid}/${v.thumbnailFileName}`
-      : null;
+      : null);
     const isLiked = likedVideos.includes(v.guid);
     const isSaved = watchLater.some(w => w.guid === v.guid);
     const likes = likeCounts[v.guid] || 0;
@@ -1792,6 +1799,17 @@ function showToast(msg, type = 'success') {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function skeletons(n) {
   return Array(n).fill('<div class="skeleton"></div>').join('');
+}
+
+async function getTMDBPoster(title) {
+  try {
+    const query = encodeURIComponent(title.replace(/[._-]/g, ' ').replace(/(.*)/g, '').trim());
+    const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${query}&api_key=${TMDB_KEY}`);
+    const data = await res.json();
+    const result = data.results?.[0];
+    if (result?.poster_path) return TMDB_IMG + result.poster_path;
+    return null;
+  } catch { return null; }
 }
 
 function esc(str) {
